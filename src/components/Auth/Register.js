@@ -14,7 +14,10 @@ import {
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { MContainer } from "../styledComponent";
-import { auth } from "../../firebase";
+import { auth, githubProvider, googleProvider } from "../../firebase";
+import authProvider from "./authProvider";
+import md5 from "md5";
+import { database } from "../../../../coder/src/firebase";
 export default function Register() {
     const { register, handleSubmit, errors, getValues } = useForm();
     const [serverError, setServerError] = useState();
@@ -22,17 +25,42 @@ export default function Register() {
     const handleOnSubmit = async (data) => {
         setServerError(null);
         setSubmitting("register");
-        const { email, password } = data;
+        const { email, password, username } = data;
         console.log("handleOnSubmit -> email", email);
         await auth
             .createUserWithEmailAndPassword(email, password)
             .then((user) => {
-                console.log("Register -> user", user);
+                user.user.updateProfile({
+                    displayName: username,
+                    photoURL: `http://www.gravatar.com/avatar/${md5(
+                        email
+                    )}?d=identicon`,
+                });
+                saveUser(user);
+                console.log(user);
             })
             .catch((error) => {
                 console.log("handleOnSubmit -> error", error);
                 setServerError(error.message);
             });
+        setSubmitting(false);
+    };
+
+    const saveUser = (user) => {
+        return database
+            .ref("users")
+            .child(user.uid)
+            .set({ name: user.displayName, photoURL: user.photoURL });
+    };
+
+    const signUpWithGoogle = async () => {
+        setSubmitting("google");
+        await authProvider(googleProvider, null, setServerError);
+        setSubmitting(false);
+    };
+    const signUpWithGithub = async () => {
+        setSubmitting("github");
+        await authProvider(githubProvider, null, setServerError);
         setSubmitting(false);
     };
 
@@ -197,7 +225,6 @@ export default function Register() {
                                     </div>
                                 )}
                             </div>
-
                             {serverError && (
                                 <Message negative>
                                     <Message.Header>
@@ -205,7 +232,6 @@ export default function Register() {
                                     </Message.Header>
                                 </Message>
                             )}
-
                             <Button
                                 style={{ marginTop: "1rem" }}
                                 color="teal"
@@ -235,13 +261,15 @@ export default function Register() {
                                         `}
                                     />
                                 }
-                                loading={submitting === "git"}
+                                loading={submitting === "github"}
                                 disabled={submitting}
                                 fluid
                                 labelPosition="left"
                                 content="GitHub"
                                 type="submit"
+                                onClick={signUpWithGithub}
                             />
+
                             <Button
                                 style={{ marginTop: "1rem" }}
                                 color="google plus"
@@ -258,7 +286,7 @@ export default function Register() {
                                 fluid
                                 labelPosition="left"
                                 content="Google"
-                                type="submit"
+                                onClick={signUpWithGoogle}
                             />
                         </Segment>
                     </Form>
