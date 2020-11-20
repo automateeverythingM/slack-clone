@@ -17,7 +17,8 @@ import { MContainer } from "../styledComponent";
 import { auth, githubProvider, googleProvider } from "../../firebase";
 import authProvider from "./authProvider";
 import md5 from "md5";
-import { database } from "../../../../coder/src/firebase";
+import { database } from "../../firebase";
+
 export default function Register() {
     const { register, handleSubmit, errors, getValues } = useForm();
     const [serverError, setServerError] = useState();
