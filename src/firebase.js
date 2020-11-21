@@ -16,7 +16,7 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
+console.log("process.env.REACT_APP_FIREBASE_API_KEY", process.env);
 export default firebase;
 
 export const auth = firebase.auth();
