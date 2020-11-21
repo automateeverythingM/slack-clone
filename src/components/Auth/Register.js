@@ -79,7 +79,7 @@ export default function Register() {
         <MContainer>
             <Grid textAlign="center" verticalAlign="middle">
                 <Grid.Column style={{ maxWidth: 450 }}>
-                    <Header as="h2" color="teal" textAlign="center">
+                    <Header as="h1" color="teal" textAlign="center">
                         <Icon name="puzzle piece" color="teal" />
                         Register for chat
                     </Header>
@@ -227,7 +227,7 @@ export default function Register() {
                                 {errors?.confirmPassword && (
                                     <div
                                         css={css`
-                                            color: red;
+                                            color: #ff0000;
                                             font-size: 0.8rem;
                                         `}
                                     >
@@ -298,6 +298,7 @@ export default function Register() {
                                 content="Google"
                                 onClick={signUpWithGoogle}
                             />
+
                         </Segment>
                     </Form>
                     <Message>

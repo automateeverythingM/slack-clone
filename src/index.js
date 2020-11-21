@@ -4,10 +4,16 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Root from "./components/Router/root";
 import "semantic-ui-css/semantic.min.css";
+import { BrowserRouter } from "react-router-dom";
+import StoreProvider from "./store/configStore";
 
 ReactDOM.render(
     <React.StrictMode>
-        <Root/>
+        <StoreProvider>
+        <BrowserRouter>
+            <Root />
+        </BrowserRouter>
+        </StoreProvider>
     </React.StrictMode>,
     document.getElementById("root")
 );
