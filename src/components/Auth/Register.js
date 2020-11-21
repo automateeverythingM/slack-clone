@@ -9,7 +9,7 @@ import {
     Button,
     Header,
     Icon,
-    Message
+    Message,
 } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -20,7 +20,7 @@ import md5 from "md5";
 import { database } from "../../firebase";
 
 export default function Register() {
-    const { register, handleSubmit, errors, getValues } = useForm();
+    const { register, handleSubmit, errors, getValues, reset } = useForm();
     const [serverError, setServerError] = useState();
     const [submitting, setSubmitting] = useState(false);
 
@@ -28,31 +28,39 @@ export default function Register() {
         setServerError(null);
         setSubmitting("register");
         const { email, password, username } = data;
-        console.log("handleOnSubmit -> email", email);
-        await auth
-            .createUserWithEmailAndPassword(email, password)
-            .then((user) => {
-                user.user.updateProfile({
-                    displayName: username,
-                    photoURL: `http://www.gravatar.com/avatar/${md5(
-                        email
-                    )}?d=identicon`
-                });
-                saveUser(user);
-                console.log(user);
-            })
-            .catch((error) => {
-                console.log("handleOnSubmit -> error", error);
-                setServerError(error.message);
-            });
+        try {
+            const userRef = await auth.createUserWithEmailAndPassword(
+                email,
+                password
+            );
+            const { user, additionalUserInfo } = userRef;
+
+            await updateUser(userRef, username, email);
+            await saveUser(user, additionalUserInfo.providerId);
+        } catch (error) {
+            console.log("handleOnSubmit -> error", error);
+            setServerError(error);
+        }
+
         setSubmitting(false);
     };
 
-    const saveUser = (user) => {
-        return database
-            .ref("users")
-            .child(user.uid)
-            .set({ name: user.displayName, photoURL: user.photoURL });
+    const updateUser = (userRef, username, email) => {
+        const url = `http://www.gravatar.com/avatar/${md5(email)}?d=identicon`;
+
+        return userRef.user.updateProfile({
+            displayName: username,
+            photoURL: url,
+        });
+    };
+
+    const saveUser = (user, provider) => {
+        return database.ref("users").child(user.uid).set({
+            name: user.displayName,
+            avatar_url: user.photoURL,
+            email: user.email,
+            provider,
+        });
     };
 
     const signUpWithGoogle = async () => {
@@ -60,19 +68,19 @@ export default function Register() {
         await authProvider(googleProvider, null, setServerError);
         setSubmitting(false);
     };
+
     const signUpWithGithub = async () => {
         setSubmitting("github");
         await authProvider(githubProvider, null, setServerError);
         setSubmitting(false);
     };
 
-    console.log("Register -> serverError", serverError);
     return (
         <MContainer>
             <Grid textAlign="center" verticalAlign="middle">
                 <Grid.Column style={{ maxWidth: 450 }}>
                     <Header as="h2" color="teal" textAlign="center">
-                        <Icon name="puzzle piece" color="teal"/>
+                        <Icon name="puzzle piece" color="teal" />
                         Register for chat
                     </Header>
                     <Form size="large" onSubmit={handleSubmit(handleOnSubmit)}>
@@ -93,8 +101,8 @@ export default function Register() {
                                             minLength: {
                                                 value: 5,
                                                 message:
-                                                    "Username minimum length is 5 characters"
-                                            }
+                                                    "Username minimum length is 5 characters",
+                                            },
                                         })}
                                     />
                                     <i
@@ -129,8 +137,8 @@ export default function Register() {
                                             pattern: {
                                                 value: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/,
                                                 message:
-                                                    "Please enter valid email address"
-                                            }
+                                                    "Please enter valid email address",
+                                            },
                                         })}
                                     />
                                     <i
@@ -165,17 +173,18 @@ export default function Register() {
                                             minLength: {
                                                 value: 8,
                                                 message:
-                                                    "Password minimum length is 8 characters"
+                                                    "Password minimum length is 8 characters",
                                             },
                                             pattern: {
                                                 value:
                                                     "/^(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/",
                                                 message:
-                                                    "Password must contain must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number"
-                                            }
+                                                    "Password must contain must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number",
+                                            },
                                         })}
                                     />
-                                    <i aria-hidden="true"
+                                    <i
+                                        aria-hidden="true"
                                         className="lock icon"
                                     ></i>
                                 </div>
@@ -193,7 +202,7 @@ export default function Register() {
                             <div
                                 css={css`
                                     margin-bottom: ${errors.confirmPassword &&
-                                0};
+                                    0};
                                 `}
                                 className="field "
                             >
@@ -206,8 +215,8 @@ export default function Register() {
                                             required: "Please confirm password",
                                             validate: (value) =>
                                                 value ===
-                                                getValues().password ||
-                                                "Confirm password don`t match"
+                                                    getValues().password ||
+                                                "Confirm password don`t match",
                                         })}
                                     />
                                     <i
@@ -229,7 +238,7 @@ export default function Register() {
                             {serverError && (
                                 <Message negative>
                                     <Message.Header>
-                                        {serverError}
+                                        {serverError.message}
                                     </Message.Header>
                                 </Message>
                             )}
@@ -245,7 +254,7 @@ export default function Register() {
                                     />
                                 }
                                 loading={submitting === "register"}
-                                disabled={submitting}
+                                disabled={!!submitting}
                                 fluid
                                 labelPosition="left"
                                 content="Register"
@@ -263,7 +272,7 @@ export default function Register() {
                                     />
                                 }
                                 loading={submitting === "github"}
-                                disabled={submitting}
+                                disabled={!!submitting}
                                 fluid
                                 labelPosition="left"
                                 content="GitHub"
@@ -283,7 +292,7 @@ export default function Register() {
                                     />
                                 }
                                 loading={submitting === "google"}
-                                disabled={submitting}
+                                disabled={!!submitting}
                                 fluid
                                 labelPosition="left"
                                 content="Google"
