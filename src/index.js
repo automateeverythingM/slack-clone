@@ -4,9 +4,10 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import Root from "./components/Router/root";
 import "semantic-ui-css/semantic.min.css";
+
 ReactDOM.render(
     <React.StrictMode>
-        <Root />
+        <Root/>
     </React.StrictMode>,
     document.getElementById("root")
 );

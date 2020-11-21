@@ -12,7 +12,7 @@ var firebaseConfig = {
     storageBucket: "slack-clone-56e13.appspot.com",
     messagingSenderId: "325739575240",
     appId: "1:325739575240:web:fad4e41709db0ec22072fd",
-    measurementId: "G-KT2BF9HXZS",
+    measurementId: "G-KT2BF9HXZS"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);

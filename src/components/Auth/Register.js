@@ -9,7 +9,7 @@ import {
     Button,
     Header,
     Icon,
-    Message,
+    Message
 } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -23,6 +23,7 @@ export default function Register() {
     const { register, handleSubmit, errors, getValues } = useForm();
     const [serverError, setServerError] = useState();
     const [submitting, setSubmitting] = useState(false);
+
     const handleOnSubmit = async (data) => {
         setServerError(null);
         setSubmitting("register");
@@ -35,7 +36,7 @@ export default function Register() {
                     displayName: username,
                     photoURL: `http://www.gravatar.com/avatar/${md5(
                         email
-                    )}?d=identicon`,
+                    )}?d=identicon`
                 });
                 saveUser(user);
                 console.log(user);
@@ -71,7 +72,7 @@ export default function Register() {
             <Grid textAlign="center" verticalAlign="middle">
                 <Grid.Column style={{ maxWidth: 450 }}>
                     <Header as="h2" color="teal" textAlign="center">
-                        <Icon name="puzzle piece" color="teal" />
+                        <Icon name="puzzle piece" color="teal"/>
                         Register for chat
                     </Header>
                     <Form size="large" onSubmit={handleSubmit(handleOnSubmit)}>
@@ -92,8 +93,8 @@ export default function Register() {
                                             minLength: {
                                                 value: 5,
                                                 message:
-                                                    "Username minimum length is 5 characters",
-                                            },
+                                                    "Username minimum length is 5 characters"
+                                            }
                                         })}
                                     />
                                     <i
@@ -128,8 +129,8 @@ export default function Register() {
                                             pattern: {
                                                 value: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/,
                                                 message:
-                                                    "Please enter valid email address",
-                                            },
+                                                    "Please enter valid email address"
+                                            }
                                         })}
                                     />
                                     <i
@@ -164,18 +165,17 @@ export default function Register() {
                                             minLength: {
                                                 value: 8,
                                                 message:
-                                                    "Password minimum length is 8 characters",
+                                                    "Password minimum length is 8 characters"
                                             },
                                             pattern: {
                                                 value:
                                                     "/^(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/",
                                                 message:
-                                                    "Password must contain must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number",
-                                            },
+                                                    "Password must contain must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number"
+                                            }
                                         })}
                                     />
-                                    <i
-                                        aria-hidden="true"
+                                    <i aria-hidden="true"
                                         className="lock icon"
                                     ></i>
                                 </div>
@@ -193,7 +193,7 @@ export default function Register() {
                             <div
                                 css={css`
                                     margin-bottom: ${errors.confirmPassword &&
-                                    0};
+                                0};
                                 `}
                                 className="field "
                             >
@@ -206,8 +206,8 @@ export default function Register() {
                                             required: "Please confirm password",
                                             validate: (value) =>
                                                 value ===
-                                                    getValues().password ||
-                                                "Confirm password don`t match",
+                                                getValues().password ||
+                                                "Confirm password don`t match"
                                         })}
                                     />
                                     <i
