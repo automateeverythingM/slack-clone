@@ -1,5 +1,5 @@
 import produce from "immer";
-import { SET_USER } from "../../actionTypes";
+import { CLEAR_USER, SET_USER } from "../../actionTypes";
 
 const initialState = {
     user: null,
@@ -11,6 +11,9 @@ export const userReducer = (state = initialState, action) => {
         switch (action.type) {
             case SET_USER:
                 draft.user = action.payload.user;
+                draft.isLoading = false;
+                break;
+            case CLEAR_USER:
                 draft.isLoading = false;
                 break;
             default:

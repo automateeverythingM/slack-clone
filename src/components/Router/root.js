@@ -14,9 +14,11 @@ function Root({ dispatch, isLoading }) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         auth.onAuthStateChanged((user) => {
+            dispatch(setUser(user));
             if (user) {
-                dispatch(setUser(user));
                 history.push("/");
+            } else {
+                history.push("/login");
             }
         });
     }, []);
