@@ -19,8 +19,12 @@ export default function Login() {
 
     const loginWithGithub = async () => {
         setSubmitting("github");
-        await authProvider(githubProvider, null, setServerError);
-        setSubmitting(false);
+        try {
+            await authProvider(githubProvider, null, setServerError);
+        } catch (error) {
+            setServerError(error);
+            setSubmitting(false);
+        }
     };
 
     const loginWithGoogle = async () => {
@@ -34,16 +38,11 @@ export default function Login() {
 
         if (!/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(email.value)) {
             setServerError(new Error("Invalid email"));
-            console.log("FAIL MAIL");
             return;
         }
 
         try {
-            const userRef = await auth.signInWithEmailAndPassword(
-                email.value,
-                password.value
-            );
-            console.log("Login -> userRef", userRef);
+            await auth.signInWithEmailAndPassword(email.value, password.value);
         } catch (error) {
             setServerError(error);
         }
