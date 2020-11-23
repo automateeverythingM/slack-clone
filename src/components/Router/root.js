@@ -6,8 +6,8 @@ import Register from "../Auth/Register";
 import { auth } from "../../firebase";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
-import { setUser } from "../../store/actions";
 import { Loader } from "semantic-ui-react";
+import { setUser } from "../../store/actions/userActions";
 
 function Root({ dispatch, isLoading }) {
     const history = useHistory();
@@ -34,7 +34,7 @@ function Root({ dispatch, isLoading }) {
 }
 const mapStateToProps = (state) => {
     return {
-        isLoading: state.user.isLoading,
+        isLoading: state.currentUser.isLoading,
     };
 };
 const WithRouterSwitch = withRouter(connect(mapStateToProps)(Root));

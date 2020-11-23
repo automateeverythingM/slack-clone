@@ -19,6 +19,6 @@ function SidePanel({ user }) {
     );
 }
 
-const mapStateToProps = (state) => ({ user: state.user.user });
+const mapStateToProps = (state) => ({ user: state.currentUser.user });
 
 export default connect(mapStateToProps)(SidePanel);

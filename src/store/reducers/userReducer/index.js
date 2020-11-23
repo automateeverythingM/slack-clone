@@ -6,7 +6,7 @@ const initialState = {
     isLoading: true,
 };
 
-export const userReducer = (state = initialState, action) => {
+export default function reducer(state = initialState, action) {
     return produce(state, (draft) => {
         switch (action.type) {
             case SET_USER:
@@ -20,4 +20,4 @@ export const userReducer = (state = initialState, action) => {
                 break;
         }
     });
-};
+}

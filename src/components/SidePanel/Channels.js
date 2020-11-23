@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import {
     Icon,
     MenuItem,
@@ -9,13 +10,14 @@ import {
     Button,
 } from "semantic-ui-react";
 import { database } from "../../firebase";
+import { setCurrentChannel } from "../../store/actions/channelActions";
 
-function Channels({ user }) {
+function Channels({ user, dispatch }) {
     const [channels, setChannels] = useState([]);
     const [channelRef] = useState(database.ref("channels"));
     const [modal, setModal] = useState(false);
 
-    const channelsLength = Object.keys(channels).length;
+    const channelsLength = channels ? Object.keys(channels).length : 0;
     useEffect(() => {
         addListeners();
     }, []);
@@ -32,10 +34,10 @@ function Channels({ user }) {
                 <MenuItem
                     key={key}
                     name={name}
-                    onClick={() => console.log(channel)}
+                    onClick={() => addCurrentChannelToGlobal(channels[channel])}
                     style={{ opacity: "0.7" }}
                 >
-                    # {name}
+                    #{name}
                 </MenuItem>
             );
         });
@@ -97,6 +99,10 @@ function Channels({ user }) {
         return name.trim().length && detail.trim().length;
     };
 
+    const addCurrentChannelToGlobal = (channel) => {
+        dispatch(setCurrentChannel(channel));
+    };
+
     return (
         <>
             <MenuMenu style={{ paddingBottom: "2em" }}>
@@ -149,4 +155,4 @@ function Channels({ user }) {
     );
 }
 
-export default Channels;
+export default connect()(Channels);
