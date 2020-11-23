@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { connect } from "react-redux";
 import {
     Icon,
@@ -13,18 +13,29 @@ import { database } from "../../firebase";
 import { setCurrentChannel } from "../../store/actions/channelActions";
 
 function Channels({ user, dispatch }) {
-    const [channels, setChannels] = useState([]);
+    const [channels, setChannels] = useState({});
     const [channelRef] = useState(database.ref("channels"));
     const [modal, setModal] = useState(false);
+    const channelsLength = useMemo(() => {
+        console.log("reRenderChannels");
 
-    const channelsLength = channels ? Object.keys(channels).length : 0;
+        return channels ? Object.keys(channels).length : 0;
+    }, [channels]);
+    // const channelsLength = channels ? Object.keys(channels).length : 0;
+
     useEffect(() => {
         addListeners();
     }, []);
 
     useEffect(() => {
-        console.log("Channels -> channels", channels);
+        // console.log("Channels -> channels", channels);
     });
+
+    const onLoadSelectFirstChannel = () => {
+        if (channelsLength > 0) {
+            addCurrentChannelToGlobal(Object.keys(channels)[0]);
+        }
+    };
 
     const displayChannelsNow = () => {
         return Object.keys(channels).map((channel) => {
@@ -43,11 +54,12 @@ function Channels({ user, dispatch }) {
         });
     };
 
-    const addListeners = () => {
+    const addListeners = async () => {
         let loadedChannels;
         channelRef.on("value", (snap) => {
             loadedChannels = snap.val();
             setChannels(loadedChannels);
+            onLoadSelectFirstChannel();
         });
     };
 
